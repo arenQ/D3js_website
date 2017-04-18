@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="../css/style.css" type="text/css" rel="stylesheet">
+<style>
+    div {
+        font-family: verdana, arial, sans-serif;
+        font-weight: bold;
+        font-size: 18px;
+    }
+</style>
+</head>
+<body>
+<div id="tooltip" class="hidden" style="background-color: grey"></div>
+<script src="../库文件/d3.js"></script>
+<h1 style="text-align: center">面积堆叠图</h1>
+<script>
+    var width = 800,
+        height = 500;
+
+    var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .style("background-color","black")
+            .style("margin-left","300px");
+
+d3.json("../数据文件/stack.json",function(error,json){
+
+var stack = d3.layout.stack()
+    (json);//调用数据
+
+
+    var xScale = d3.scale.ordinal()
+            .domain(d3.range(json[0].length))//调用数据
+            .rangeRoundBands([0, width/2], 0.01);
+
+    var maxHeight=d3.max(json, function(d) {//调用数据
+        return d3.max(d, function(d) { return d.y0 + d.y; });
+    });
+    var yScale = d3.scale.linear()
+            .domain([0,	maxHeight])
+            .range([0, height]);
+
+    var colors = d3.scale.category20();
+
+    var groups = svg.selectAll("g")
+            .data(json)//调用数据
+            .enter()
+            .append("g")
+            .style("fill", function(d, i) { return colors(i); });
+
+    var area = d3.svg.area()
+            .interpolate("cardinal")
+            .x(function(d,i) { return xScale(i); })
+            .y0(function(d) { return height-yScale(d.y0 + d.y); })
+            .y1(function(d) { return height-yScale(d.y0); });
+
+    groups.append("path")
+            .attr("d", function(d) { return area(d); })
+            .style("fill", function(d, i) { return colors(i); });
+
+    var Text = groups.selectAll("text")
+            .data(function (d) {
+                return d;
+            })
+            .enter()
+            .append("text")
+            .attr({
+                x: function (d, i) {
+                    return xScale(i);
+                },
+                y: function (d) {
+                    return height - yScale(d.y0) - yScale(d.y)+20;
+                },
+                "dy":".2em",
+                "text-anchor": "moddle"})
+            .attr("fill","white")
+            .text(function(d){
+                return d.y;
+            });
+    d3.select("#tooltip").classed("hidden",true);
+    });
+</script>
+<div>
+    <h2>#js代码</h2>
+    <pre style="border: 2px solid deepskyblue">
+    <code>
+        var width = 1300,
+        height = 670;
+
+        d3.json("../数据文件/stack.json",function(error,json){
+
+        var stack = d3.layout.stack()
+        (json);//调用数据
+
+
+        var xScale = d3.scale.ordinal()
+        .domain(d3.range(json[0].length))//调用数据
+        .rangeRoundBands([0, width/2], 0.01);
+
+        var maxHeight=d3.max(json, function(d) {//调用数据
+        return d3.max(d, function(d) { return d.y0 + d.y; });
+        });
+        var yScale = d3.scale.linear()
+        .domain([0,	maxHeight])
+        .range([0, height]);
+
+        var colors = d3.scale.category20();
+
+        var svg = d3.select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background-color","black")
+        .style("margin-left","300px");
+
+        var groups = svg.selectAll("g")
+        .data(json)//调用数据
+        .enter()
+        .append("g")
+        .style("fill", function(d, i) { return colors(i); });
+
+        var area = d3.svg.area()
+        .interpolate("cardinal")
+        .x(function(d,i) { return xScale(i); })
+        .y0(function(d) { return height-yScale(d.y0 + d.y); })
+        .y1(function(d) { return height-yScale(d.y0); });
+
+        groups.append("path")
+        .attr("d", function(d) { return area(d); })
+        .style("fill", function(d, i) { return colors(i); });
+
+        var Text = groups.selectAll("text")
+        .data(function (d) {
+        return d;
+        })
+        .enter()
+        .append("text")
+        .attr({
+        x: function (d, i) {
+        return xScale(i);
+        },
+        y: function (d) {
+        return height - yScale(d.y0) - yScale(d.y)+20;
+        },
+        "dy":".2em",
+        "text-anchor": "moddle"})
+        .attr("fill","white")
+        .text(function(d){
+        return d.y;
+        });
+        d3.select("#tooltip").classed("hidden",true);
+        });
+    </code>
+</pre>
+</div>
+<div>
+    <h2>#数据文件</h2>
+    <pre style="border: 2px solid deepskyblue">
+    <code>
+        [
+        [
+        { "x": 0, "y": 5 },{ "x": 1, "y": 4 },{ "x": 2, "y": 2 },{ "x": 3, "y": 2 },
+        { "x": 4, "y": 3 },{ "x": 5, "y": 1 },{ "x": 6, "y": 2 },{ "x": 7, "y": 2 }
+        ],[
+        { "x": 0, "y": 2 },{ "x": 1, "y": 5 },{ "x": 2, "y": 3 },{ "x": 3, "y": 3 },
+        { "x": 4, "y": 1 },{ "x": 5, "y": 5 },{ "x": 6, "y": 3 },{ "x": 7, "y": 2 }
+        ],[
+        { "x": 0, "y": 5 },{ "x": 1, "y": 8 },{ "x": 2, "y": 1 },{ "x": 3, "y": 4 },
+        { "x": 4, "y": 3 },{ "x": 5, "y": 7 },{ "x": 6, "y": 2 },{ "x": 7, "y": 6 }
+        ]
+        ]
+    </code>
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+    "nodes":[
+    {
+    "name": "",
+    "children":[
+        {"name": "北京"},{"name": "上海"},{"name": "杭州"},
+        {"name": "广州"},{"name": "桂林"},{"name": "昆明"},
+        {"name": "成都"},{"name": "西安"},{"name": "太原"}
+    ]
+    }
+    ],
+    "edges":[
+        {"source": "北京", "target": "上海"},
+        {"source": "北京", "target": "广州"},
+        {"source": "北京", "target": "杭州"},
+        {"source": "北京", "target": "西安"},
+        {"source": "北京", "target": "成都"},
+        {"source": "北京", "target": "太原"},
+        {"source": "北京", "target": "桂林"},
+        {"source": "北京", "target": "昆明"},
+        {"source": "北京", "target": "成都"},
+        {"source": "上海", "target": "杭州"},
+        {"source": "昆明", "target": "成都"},
+        {"source": "西安", "target": "太原"}
+        ]
+}

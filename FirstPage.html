@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>D3js学习网</title>
+    <link rel="stylesheet" href="css/bootstrap-3.3.7/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-3.3.7/dist/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="css/bootstrap-3.3.7/css/font-awesome.min.css">
+</head>
+<body>
+<div class="img-container">
+    <img src="img/hbO8v.jpg">
+    <div class="layer">
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <!--导航栏-->
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" id="Home">Home</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="#f2">About<span class="sr-only">(current)</span></a></li>
+                <li><a href="#f3">Demo</a></li>
+            </ul>
+            <form class="navbar-form navbar-right" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search" id="navbar-input">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <ul class="nav navbar-nav navbar-left">
+                <li><a href="#f4">Source</a></li>
+                <li><a href="#f5">Contact</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+       <!--中间大文本-->
+<div class="row">
+<div>
+<p class="text-center Text-Big">D3js</p>
+<p class="text-center Text-Small">A picture is worth a thousand words</p>
+</div>
+    </div>
+        <!--注册表单-->
+        <div id="form-topfont">
+        <a href="#" class="active" id="signin-a">sign in</a><a href="#" id="signup-a">sign up</a>
+        </div>
+<form class="form-horizontal" role="form" method="post" action="../login.php" id="form">
+    <div class="form-group form-input">
+        <div class="col-md-2 col-md-offset-5">
+            <i class="fa fa-user fa-lg"></i>
+            <input type="text" class="form-control Form" id="firstname" placeholder="Username" name="UserName">
+        </div>
+    </div>
+    <div class="form-group form-input">
+        <div class="col-md-2 col-md-offset-5">
+            <i class="fa fa-lock fa-lg"></i>
+            <input type="password" class="form-control Form" id="lastname" placeholder="password" name="password">
+        </div>
+    </div>
+    <div class="form-group" id="form-sign">
+        <div class="col-md-offset-5 col-md-10">
+            <input type="submit" class="btn btn-success Form" value="sign in" id="sign">
+        </div>
+    </div>
+</form>
+    </div>
+</div>
+<div id="f2">
+    <h1 class="text-center">Introduction</h1>
+    <div class="about-div">
+        <p class="text-center">D3.js is a JavaScript library for manipulating documents based on data. D3 helps you bring data to life using <abbr title="HyperText Markup Language">HTML</abbr>, <abbr title="Scalable Vector Graphics">SVG</abbr>, and <abbr title="Cascading Style Sheets">CSS</abbr>. D3’s emphasis on web standards gives you the full capabilities of modern browsers without tying yourself to a proprietary framework, combining powerful visualization components and a data-driven approach to <abbr title="Document Object Model">DOM</abbr> manipulation.I made this website for calling more people to learn and use it.</p>
+    </div>
+</div>
+<div id="f3">
+<h1 class="text-center">Demo</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <a href="demo/html/bundle.html" target="_blank"><img src="img/bundle.png" class="img-responsive"></a>
+                <a href="demo/html/bundle.html" target="_blank" class="demo-link">bundle</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/chord.html" target="_blank"><img src="img/chord.png" class="img-responsive"></a>
+                <a href="demo/html/chord.html" target="_blank" class="demo-link">chord</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/force.html" target="_blank"><img src="img/force.png" class="img-responsive"></a>
+                <a href="demo/html/force.html" target="_blank" class="demo-link">force</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <a href="demo/html/area-gradient.html" target="_blank"><img src="img/area.png" class="img-responsive"></a>
+                <a href="demo/html/area-gradient.html" target="_blank" class="demo-link">area-gradient</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/heatmap.html" target="_blank"><img src="img/heat.png" class="img-responsive"></a>
+                <a href="demo/html/heatmap.html" target="_blank" class="demo-link">heatmap</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/histogram.html" target="_blank"><img src="img/his.png" class="img-responsive"></a>
+                <a href="demo/html/histogram.html" target="_blank" class="demo-link">histogram</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <a href="demo/html/ice.html" target="_blank"><img src="img/ice.png" class="img-responsive"></a>
+                <a href="demo/html/ice.html" target="_blank" class="demo-link">ice bar</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/pack.html" target="_blank"><img src="img/pack.png" class="img-responsive"></a>
+                <a href="demo/html/pack.html" target="_blank" class="demo-link">pack</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/parallel.html" target="_blank"><img src="img/paralle.png" class="img-responsive"></a>
+                <a href="demo/html/parallel.html" target="_blank" class="demo-link">parallel</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <a href="demo/html/path.centroid.html" target="_blank"><img src="img/path.png" class="img-responsive"></a>
+                <a href="demo/html/path.centroid.html" target="_blank" class="demo-link">map</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/pie1.html" target="_blank"><img src="img/pie.png" class="img-responsive"></a>
+                <a href="demo/html/pie1.html" target="_blank" class="demo-link">pie</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/stack_area.html" target="_blank"><img src="img/stack-area.png" class="img-responsive"></a>
+                <a href="demo/html/stack_area.html" target="_blank" class="demo-link">stack-area</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <a href="demo/html/stack_block.html" target="_blank"><img src="img/stack-block.png" class="img-responsive"></a>
+                <a href="demo/html/stack_block.html" target="_blank" class="demo-link">stack-block</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/sun.html" target="_blank"><img src="img/sun.png" class="img-responsive"></a>
+                <a href="demo/html/sun.html" target="_blank" class="demo-link">sun</a>
+            </div>
+            <div class="col-sm-4">
+                <a href="demo/html/tree.html" target="_blank"><img src="img/tree.png" class="img-responsive"></a>
+                <a href="demo/html/tree.html" target="_blank" class="demo-link">tree</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="f4">
+    <h1 class="text-center">Source</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>demo和代码</h2>
+                <div class="source-div">
+                <h3>D3js官网</h3>
+                <a href="https://d3js.org/" target="_blank">https://d3js.org/</a>
+                <p>在这里能获得d3.js的最新版本，同时还拥有大量demo和代码示例</p>
+                </div>
+                <div class="source-div">
+                <h3>官方API文档</h3>
+                <a href="https://github.com/d3/d3/blob/master/API.md" target="_blank">https://github.com/d3/d3/blob/master/API.md</a>
+                <p>通过它可以了解到D3API的使用</p>
+                </div>
+                <div class="source-div">
+                <h3>D3开发者Mike Bostock的博客</h3>
+                <a href="https://bl.ocks.org/mbostock" target="_blank">https://bl.ocks.org/mbostock</a>
+                <p>包含大量在线示例，介绍了很多D3的编程技巧，讲解了部分API的使用，还探讨了许多使用D3会遇到的问题的解决方案</p>
+                    </div>
+                    <div class="source-div">
+                <h3>D3开发者Jason Davies的个人网站</h3>
+                <a href="https://www.jasondavies.com/" target="_blank">https://www.jasondavies.com/</a>
+                <p>包含很多在线示例，涉及一些API的形象解释。扩展了D3的地理投影。讲解了很多D3的实现原理如贝塞尔曲线的动态演示等。还有一些像词云这样的使用插件</p>
+                        </div>
+                        <div class="source-div">
+                <h3>2000多个在线案例汇总</h3>
+                <a href="http://christopheviau.com/d3list/gallery.html" target="_blank">http://christopheviau.com/d3list/gallery.html</a>
+                <p>作者收集的这些可视化案例大都可以在线运行，并且已经按照类别组织好，可以通过关键词来筛选案例。</p>
+                            </div>
+                            <div class="source-div">
+                <h3>SVG在线教程</h3>
+                <a href="http://tutorials.jenkov.com/svg/index.html" target="_blank">http://tutorials.jenkov.com/svg/index.html</a>
+                <p>讲解SVG的基本功能，案例都可以在线演示。</p>
+                                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h2>书籍</h2>
+            <div class="col-md-12">
+                <div class="source-div">
+                <h3>&lsaquo;&lsaquo;数据可视化实战（使用D3设计交互式图表）&rsaquo;&rsaquo;</h3>
+                <p>Scott Murry著，李松峰译。这本书写得浅显易懂，是入门D3的经典书籍。其中也有涉及一些API的简要介绍</p>
+                </div>
+                <div class="source-div">
+                    <h3>&lsaquo;&lsaquo;D3.js In Action&rsaquo;&rsaquo;</h3>
+                    <p>Elijah Meeks著。设计D3数据可视化的方方面面，特别是数据可视化和D3.js的原理，定制组件，大数据可视化等内容很经典。内容详实丰富</p>
+                </div>
+                <div class="source-div">
+                    <h3>&lsaquo;&lsaquo;Mastering D3.js&rsaquo;&rsaquo;</h3>
+                    <p>Pablo Navarro著。其中讲解了比较实用的地理可视化和实时数据可视化，包含部分API的介绍</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h2>工具</h2>
+            <div class="col-md-12">
+                <div class="source-div">
+                    <h3>mapshaper</h3>
+                    <a href="http://mapshaper.org/" target="_blank">http://mapshaper.org/</a>
+                    <p>支持Shapefile,GeoJson和TopoJSON文件的在线编辑和转换</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h2>疑问解答</h2>
+            <div class="col-md-12">
+                <div class="source-div">
+                    <h3>Stackoverflow</h3>
+                    <a href="http://stackoverflow.com/search?q=d3" target="_blank">http://stackoverflow.com/search?q=d3</a>
+                    <p>很多难以理解的API可以在这找到答案</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="f5">
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <p>
+                <span class="glyphicon glyphicon-envelope"></span>
+                <strong>邮箱：</strong>2432321132@qq.com
+            </p>
+        </div>
+        <div class="col-md-4">
+            <p>
+                <span class="glyphicon glyphicon-earphone"></span>
+                <strong>电话：</strong>188117xxxxx
+            </p>
+        </div>
+        <div class="col-md-4">
+            <p>
+                <a href="https://github.com/jspyth" class="contact-a" target="_blank">我的Github</a>
+                <a href="https://zhuanlan.zhihu.com/jspyth" class="contact-a" target="_blank">我的知乎</a>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 contact-div">
+            <a href="http://www.twitter.com/" target="_blank"><img src="img/twitter.png"></a>
+            <a href="https://www.zhihu.com/" target="_blank"><img src="img/zhihu.png"></a>
+            <a href="https://github.com/" target="_blank"><img src="img/github.png"></a>
+        </div>
+    </div>
+</div>
+</div>
+<script src="js/jquery-3.1.0.js"></script>
+<script src="css/bootstrap-3.3.7/dist/js/bootstrap.min.js"></script>
+<script src="js/someFuction.js"></script>
+</body>
+</html>

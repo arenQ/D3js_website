@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .link {
+            stroke: #e2e0e1;
+
+            opacity: 0.5;
+        }
+
+        .node text {
+            pointer-events: auto;
+            font: 10px sans-serif;
+            color:white;
+            opacity: 0;
+        }
+
+        #Table{
+            color:white;
+        }
+        p,b{
+            color:white;
+        }
+        div {
+            font-family: verdana, arial, sans-serif;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<h1 style="text-align: center">力学关系图</h1>
+<script src="../库文件/d3.js"></script>
+<script>
+
+    var width = 700,height = 570;
+    var radius = 15;
+
+    var colors = d3.scale.category20();
+    var rscale = d3.scale.linear()
+            .domain([1,30])
+            .range([3,15]);
+
+    var color = d3.scale.category20();
+    var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .style("background-color","black")
+            .style("margin-left","300px")
+        /*.call(
+         d3.behavior.zoom()
+         .scaleExtent([1,20])
+         .on("zoom",zoom)
+         )*/
+            .append("g");
+    //zoom是定义缩放事件的
+    function zoom(){
+        svg.attr("transform","translate("+d3.event.translate+")scale("+d3.event.scale+")");
+    }
+
+
+    var force = d3.layout.force()
+            .gravity(0.05)//结点引力
+            .distance(90)//结点距离
+            .charge(-80)//结点排斥力
+            .size([width, height]);
+
+
+
+    var label_text_1 = svg.append("text")
+            .attr("class","labeltext")
+            .attr("x",10)
+            .attr("y",16)
+            .text("");
+
+    var label_text_2 = svg.append("text")
+            .attr("class","labeltext")
+            .attr("x",10)
+            .attr("y",40)
+            .text("");
+//数据文件接口
+    d3.json("../数据文件/haitun - 1000.json", function(error, json) {
+        if (error){throw error;}
+
+        force
+                .nodes(json.nodes)
+                .links(json.links)
+                .on("tick", tick)
+                .start();
+
+        link = svg.selectAll(".link")//边
+                .data(json.links)
+                .enter().append("line")
+                .attr("class", "link")
+                .attr("id",function(d){
+                    return d.value1;//调用数据value1
+                })
+            //.attr("stroke-width","2.5px")
+                .attr("stroke","#e2dab8")
+                .attr("stroke-width","1.5px");
+
+
+        /****下面node不加var是为了把node声明为全局变量，让所在函数作用域外的其他函数也能使用该变量**/
+
+
+        node=svg.selectAll(".node")
+                .data(json.nodes)
+                .enter().append("g")
+                .attr("class", "node")
+                .call(force.drag);
+
+        node.append("circle")//添加节点
+                /*.attr("r",function(d){
+                    return rscale(d.number);//调用数据number
+                })*/
+            .attr("r",11)
+                .attr("Id",function(d){
+                    return d.id;//调用数据id
+                })
+                .attr("class",function(d){
+                    return d.id;//调用数据value1
+                })
+                .attr("stroke","blue")
+                .attr("stroke-width",function(d){
+                    return 1;
+                })
+                .style("fill",function(d,i){
+                    return color(i);
+                });
+        var drag = force.drag()
+                .on("dragstart", function (d, i) {
+                    d.fixed = true;    //拖拽开始后设定被拖拽对象为固定
+                    label_text_2.text("");
+                })
+                .on("dragend", function (d, i) {
+                    label_text_2.text("");
+                })
+                .on("drag", function (d, i) {
+                    label_text_2.text("");
+                });
+
+        node.append("text")//添加文本
+                .attr("dx", -5)//dx值可以调节text文本相对与圆点circle的位置
+                .attr("dy", ".35em")
+                .attr("class",function(d){
+                    return d.value1;//调用数据value1
+                })
+                .attr("Id",function(d){
+                    return d.id;//调用数据id
+                })
+                .attr("val",function(d){
+                    return d.value1;//调用数据value1
+                })
+                .text(function (d) {
+                    return d.number;//调用数据id
+                })
+                .style("font-size","20px")
+                .style("fill","white")
+                .on("dblclick", function (d, i) {
+                    d.fixed = false;
+                })
+                .on("mouseover", function (d, i) {
+                    d3.select(this)
+                            .style({"opacity":1,
+                                    "font-size":"28px"})
+                })
+                .on("mouseout", function (d, i) {
+                    d3.select(this)
+                            .style({"opacity":0,
+                                "font-size":"20px"});
+                })
+                .call(drag);
+
+        /*force.on("tick", function () {*/
+        function tick(){
+            link.attr("x1", function (d) {
+                return d.source.x;
+            })
+                    .attr("y1", function (d) {
+                        return d.source.y;
+                    })
+                    .attr("x2", function (d) {
+                        return d.target.x;
+                    })
+                    .attr("y2", function (d) {
+                        return d.target.y;
+                    });
+
+            node.attr("transform", function (d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+        }
+    });
+    </script>
+<div>
+    <h2>#js代码</h2>
+    <pre style="border: 2px solid deepskyblue">
+    <code>
+        var width = 700,height = 570;
+        var radius = 15;
+
+        var colors = d3.scale.category20();
+        var rscale = d3.scale.linear()
+        .domain([1,30])
+        .range([3,15]);
+
+        var color = d3.scale.category20();
+        var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background-color","black")
+        .style("margin-left","300px")
+        /*.call(
+        d3.behavior.zoom()
+        .scaleExtent([1,20])
+        .on("zoom",zoom)
+        )*/
+        .append("g");
+        //zoom是定义缩放事件的
+        function zoom(){
+        svg.attr("transform","translate("+d3.event.translate+")scale("+d3.event.scale+")");
+        }
+
+
+        var force = d3.layout.force()
+        .gravity(0.05)//结点引力
+        .distance(90)//结点距离
+        .charge(-80)//结点排斥力
+        .size([width, height]);
+
+
+
+        var label_text_1 = svg.append("text")
+        .attr("class","labeltext")
+        .attr("x",10)
+        .attr("y",16)
+        .text("");
+
+        var label_text_2 = svg.append("text")
+        .attr("class","labeltext")
+        .attr("x",10)
+        .attr("y",40)
+        .text("");
+        //数据文件接口
+        d3.json("../数据文件/haitun - 1000.json", function(error, json) {
+        if (error){throw error;}
+
+        force
+        .nodes(json.nodes)
+        .links(json.links)
+        .on("tick", tick)
+        .start();
+
+        link = svg.selectAll(".link")//边
+        .data(json.links)
+        .enter().append("line")
+        .attr("class", "link")
+        .attr("id",function(d){
+        return d.value1;//调用数据value1
+        })
+        //.attr("stroke-width","2.5px")
+        .attr("stroke","#e2dab8")
+        .attr("stroke-width","1.5px");
+
+
+        /****下面node不加var是为了把node声明为全局变量，让所在函数作用域外的其他函数也能使用该变量**/
+
+
+        node=svg.selectAll(".node")
+        .data(json.nodes)
+        .enter().append("g")
+        .attr("class", "node")
+        .call(force.drag);
+
+        node.append("circle")//添加节点
+        /*.attr("r",function(d){
+        return rscale(d.number);//调用数据number
+        })*/
+        .attr("r",15)
+        .attr("Id",function(d){
+        return d.id;//调用数据id
+        })
+        .attr("class",function(d){
+        return d.id;//调用数据value1
+        })
+        .attr("stroke","blue")
+        .attr("stroke-width",function(d){
+        return 1;
+        })
+        .style("fill",function(d,i){
+        return color(i);
+        });
+        var drag = force.drag()
+        .on("dragstart", function (d, i) {
+        d.fixed = true;    //拖拽开始后设定被拖拽对象为固定
+        label_text_2.text("");
+        })
+        .on("dragend", function (d, i) {
+        label_text_2.text("");
+        })
+        .on("drag", function (d, i) {
+        label_text_2.text("");
+        });
+
+        node.append("text")//添加文本
+        .attr("dx", -5)//dx值可以调节text文本相对与圆点circle的位置
+        .attr("dy", ".35em")
+        .attr("class",function(d){
+        return d.value1;//调用数据value1
+        })
+        .attr("Id",function(d){
+        return d.id;//调用数据id
+        })
+        .attr("val",function(d){
+        return d.value1;//调用数据value1
+        })
+        .text(function (d) {
+        return d.number;//调用数据id
+        })
+        .style("font-size","20px")
+        .style("fill","white")
+        .on("dblclick", function (d, i) {
+        d.fixed = false;
+        })
+        .on("mouseover", function (d, i) {
+        d3.select(this)
+        .style({"opacity":1,
+        "font-size":"28px"})
+        })
+        .on("mouseout", function (d, i) {
+        d3.select(this)
+        .style({"opacity":0,
+        "font-size":"20px"});
+        })
+        .call(drag);
+
+        /*force.on("tick", function () {*/
+        function tick(){
+        link.attr("x1", function (d) {
+        return d.source.x;
+        })
+        .attr("y1", function (d) {
+        return d.source.y;
+        })
+        .attr("x2", function (d) {
+        return d.target.x;
+        })
+        .attr("y2", function (d) {
+        return d.target.y;
+        });
+
+        node.attr("transform", function (d) {
+        return "translate(" + d.x + "," + d.y + ")";
+        });
+        }
+        });
+    </code>
+</pre>
+</div>
+<div>
+    <h2>#数据文件</h2>
+    <pre style="border: 2px solid deepskyblue">
+    <code>
+    文件过大，无法显示！
+    </code>
+</pre>
+</div>

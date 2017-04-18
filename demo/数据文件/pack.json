@@ -1,0 +1,23 @@
+{
+    "name": "AAA",
+"children": [
+{
+    "name": "BBB",
+    "children": [
+        {"value": 1},
+        {"value": 1},
+        {"value": 1},
+        {"value": 1},
+        {"value": 1}
+]
+},
+{
+    "name": "CCC",
+    "children": [
+        {"value": 1},
+        {"value": 3},
+        {"value": 2}
+]
+}
+]
+}

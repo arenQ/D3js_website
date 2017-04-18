@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>捆图</title>
+    <style>
+        .node circle {
+            stroke: black;
+            stroke-width: 2px;
+        }
+
+        .node text{
+            font-size: 12px;
+            font-family: simsun;
+        }
+
+        .link {
+            fill: none;
+            stroke: white;
+            stroke-opacity: .5;
+            stroke-width: 8px;
+        }
+        div {
+            font-family: verdana, arial, sans-serif;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+
+</head>
+<body>
+<script src="../库文件/d3.js"></script>
+<script src="../库文件/jquery-3.1.0.js"></script>
+<h1 style="text-align: center">捆图</h1>
+<script>
+
+    var width  = 700;	//SVG绘制区域的宽度
+    var height = 500;	//SVG绘制区域的高度
+
+    var svg = d3.select("body")			//选择<body>
+            .append("svg")			//在<body>中添加<svg>
+            .attr("width", width)	//设定<svg>的宽度属性
+            .attr("height", height)//设定<svg>的高度属性
+            .style("background-color","black")
+            .style("margin-left","300px");
+d3.json("../数据文件/bundle.json",function(error,json){
+
+    var Zoom_data = 400;//这个值可以调节图的大小
+    //2. 转换数据
+    var cluster = d3.layout.cluster()
+            .size([360, 1.8*width/2 - Zoom_data])
+            .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+    var bundle = d3.layout.bundle();
+
+    //数据接口
+    var nodes = cluster.nodes(json.nodes[0]);
+    var oLinks = map(nodes, json.edges);
+
+    var links = bundle(oLinks);
+
+    //将links中的source和target由名称替换成节点
+    function map( nodes, links ){
+        var hash = [];
+        for(var i = 0; i < nodes.length; i++){
+            hash[nodes[i].name] = nodes[i];//调用数据
+        }
+        var resultLinks = [];
+        for(var j = 0; j < links.length; j++){
+            resultLinks.push({  source: hash[ links[j].source ],
+                target: hash[ links[j].target ]
+            });
+        }
+        return resultLinks;
+    }
+
+    //3. 绘图
+    var line = d3.svg.line.radial()
+            .interpolate("bundle")
+            .tension(.85)
+            .radius(function(d) { return d.y; })
+            .angle(function(d) { return d.x / 180 * Math.PI; });
+
+    gBundle = svg.append("g")
+            .attr("transform", "translate(" + (width/2) + "," + (height/2) + ")");
+
+    var color = d3.scale.category20c();
+
+    var link = gBundle.selectAll(".link")
+            .data(links)
+            .enter()
+            .append("path")
+            .attr("class", "link")
+            .attr("d", line);	//使用线段生成器
+
+
+    var node = gBundle.selectAll(".node")
+            .data( nodes.filter(function(d) { return !d.children; }) )
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                return "rotate(" + (d.x- 90) + ")translate(" + d.y + ")" + "rotate("+ (90 - d.x) +")";
+            });
+
+    node.append("circle")//添加节点
+            .attr("r", 20)
+            .attr("id",function(d,i){
+                return i;
+            })
+            .style("fill",function(d,i){ return color(i); });
+
+    node.append("text")//添加文本
+            .attr("dy",".2em")
+            .attr("id",function(d,i){
+                return i;
+            })
+            .style("text-anchor", "middle")
+            .text(function(d) { return d.name; })//调用数据做文本信息
+            ;
+
+    /************前面给圆和文本都定义好了id属性，属性值是相同的索引*************/
+    var All_Circle = document.getElementsByTagName("circle");
+    var All_Text = document.getElementsByTagName("text");
+    var All_Line = document.getElementsByTagName("path");
+
+    /**********鼠标移上事件******/
+    $("text").mouseover(function(){
+        d3.select(this)
+                .style({"font-size":"28px",
+                        "fill":"blue"});
+        var text_id = $(this).attr("id");
+        All_Circle[text_id].style.r = 30;
+    });
+    /**********鼠标移出事件******/
+    $("text").mouseout(function(){
+        d3.select(this)
+                .style({"font-size":"12px",
+                    "fill":"black"});
+        var text_id = $(this).attr("id");
+        All_Circle[text_id].style.r = 20;
+    });
+    /**********鼠标单击事件******/
+    $("text").click(function(){
+        var Text = $(this).text();
+        for(var i = 0;i < json.edges.length;i++){
+            if((json.edges[i].source == Text) ||(json.edges[i].target == Text)){
+                All_Line[i].style.opacity = .5;
+            }
+            else{
+                All_Line[i].style.opacity = 0;
+            }
+        }
+    });
+    /**********鼠标双击事件******/
+    $("text").dblclick(function(){
+        for(var i = 0;i < json.edges.length;i++){
+            All_Line[i].style.opacity = .5;
+        }
+    });
+
+});
+</script>
+<div>
+    <h2>#js代码</h2>
+    <pre style="border: 2px solid deepskyblue">
+    <code>
+        var width  = 700;	//SVG绘制区域的宽度
+        var height = 500;	//SVG绘制区域的高度
+
+        var svg = d3.select("body")			//选择body
+    .append("svg")			//在body中添加svg
+        .attr("width", width)	//设定svg的宽度属性
+        .attr("height", height)//设定svg的高度属性
+            .style("background-color","black")
+            .style("margin-left","300px");
+            d3.json("../数据文件/bundle.json",function(error,json){
+
+            var Zoom_data = 400;//这个值可以调节图的大小
+            //2. 转换数据
+            var cluster = d3.layout.cluster()
+            .size([360, width/2 - Zoom_data])
+            .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+            var bundle = d3.layout.bundle();
+
+            //数据接口
+            var nodes = cluster.nodes(json.nodes[0]);
+            var oLinks = map(nodes, json.edges);
+
+            var links = bundle(oLinks);
+
+            //将links中的source和target由名称替换成节点
+            function map( nodes, links ){
+            var hash = [];
+            for(var i = 0; i < nodes.length; i++){
+            hash[nodes[i].name] = nodes[i];//调用数据
+            }
+            var resultLinks = [];
+            for(var j = 0; j < links.length; j++){
+            resultLinks.push({  source: hash[ links[j].source ],
+            target: hash[ links[j].target ]
+            });
+            }
+            return resultLinks;
+            }
+
+            //3. 绘图
+            var line = d3.svg.line.radial()
+            .interpolate("bundle")
+            .tension(.85)
+            .radius(function(d) { return d.y; })
+            .angle(function(d) { return d.x / 180 * Math.PI; });
+
+            gBundle = svg.append("g")
+            .attr("transform", "translate(" + (width/2) + "," + (height/2) + ")");
+
+            var color = d3.scale.category20c();
+
+            var link = gBundle.selectAll(".link")
+            .data(links)
+            .enter()
+            .append("path")
+            .attr("class", "link")
+            .attr("d", line);	//使用线段生成器
+
+
+            var node = gBundle.selectAll(".node")
+            .data( nodes.filter(function(d) { return !d.children; }) )
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+            return "rotate(" + (d.x- 90) + ")translate(" + d.y + ")" + "rotate("+ (90 - d.x) +")";
+            });
+
+            node.append("circle")//添加节点
+            .attr("r", 20)
+            .attr("id",function(d,i){
+            return i;
+            })
+            .style("fill",function(d,i){ return color(i); });
+
+            node.append("text")//添加文本
+            .attr("dy",".2em")
+            .attr("id",function(d,i){
+            return i;
+            })
+            .style("text-anchor", "middle")
+            .text(function(d) { return d.name; })//调用数据做文本信息
+            ;
+
+            /************前面给圆和文本都定义好了id属性，属性值是相同的索引*************/
+            var All_Circle = document.getElementsByTagName("circle");
+            var All_Text = document.getElementsByTagName("text");
+            var All_Line = document.getElementsByTagName("path");
+
+            /**********鼠标移上事件******/
+            $("text").mouseover(function(){
+            d3.select(this)
+            .style({"font-size":"28px",
+            "fill":"blue"});
+            var text_id = $(this).attr("id");
+            All_Circle[text_id].style.r = 30;
+            });
+            /**********鼠标移出事件******/
+            $("text").mouseout(function(){
+            d3.select(this)
+            .style({"font-size":"12px",
+            "fill":"black"});
+            var text_id = $(this).attr("id");
+            All_Circle[text_id].style.r = 20;
+            });
+            /**********鼠标单击事件******/
+            $("text").click(function(){
+            var Text = $(this).text();
+            for(var i = 0;i < json.edges.length;i++){
+            if((json.edges[i].source == Text) ||(json.edges[i].target == Text)){
+            All_Line[i].style.opacity = .5;
+            }
+            else{
+            All_Line[i].style.opacity = 0;
+            }
+            }
+            });
+            /**********鼠标双击事件******/
+            $("text").dblclick(function(){
+            for(var i = 0;i < json.edges.length;i++){
+            All_Line[i].style.opacity = .5;
+            }
+            });
+
+            });
+    </code>
+</pre>
+</div>
+<div>
+    <h2>#数据文件</h2>
+    <pre style="border: 2px solid deepskyblue">
+    <code>
+        {
+        "nodes":[
+        {
+        "name": "",
+        "children":[
+        {"name": "北京"},{"name": "上海"},{"name": "杭州"},
+        {"name": "广州"},{"name": "桂林"},{"name": "昆明"},
+        {"name": "成都"},{"name": "西安"},{"name": "太原"}
+        ]
+        }
+        ],
+        "edges":[
+        {"source": "北京", "target": "上海"},
+        {"source": "北京", "target": "广州"},
+        {"source": "北京", "target": "杭州"},
+        {"source": "北京", "target": "西安"},
+        {"source": "北京", "target": "成都"},
+        {"source": "北京", "target": "太原"},
+        {"source": "北京", "target": "桂林"},
+        {"source": "北京", "target": "昆明"},
+        {"source": "北京", "target": "成都"},
+        {"source": "上海", "target": "杭州"},
+        {"source": "昆明", "target": "成都"},
+        {"source": "西安", "target": "太原"}
+        ]
+        }
+    </code>
+</pre>
+</div>
+</body>
+</html>

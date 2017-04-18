@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <script type="text/javascript" src="../js/d3.js"></script>
+    <script type="text/javascript" src="../js/d3.csv.js"></script>
+    <script type="text/javascript" src="../js/d3.time.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/style.css"/>
+    <style type="text/css">
+
+svg {
+  font-size: 10px;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke-width: .5px;
+}
+
+.x.axis path {
+  stroke: #0a0cff;
+}
+
+.x.axis line {
+  stroke: #fff;
+  stroke-opacity: .5;
+}
+
+.y.axis line {
+  stroke: #ddd;
+}
+
+path.line {
+  fill: none;
+  stroke: #0000ff;
+  stroke-width: .5px;
+}
+
+rect.pane {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+div {
+    font-family: verdana, arial, sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+}
+    </style>
+  </head>
+  <body>
+  <h1 style="text-align: center">面积梯度图</h1>
+    <div id="body">
+      <div id="footer">
+        <span>…</span>
+        <div class="hint">mousewheel to zoom, drag to pan</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+
+var m = [79, 80, 160, 79],
+    w = 1000 - m[1] - m[3],
+    h = 570 - m[0] - m[2],
+    parse = d3.time.format("%Y-%m-%d").parse,
+    format = d3.time.format("%Y");
+
+// Scales. Note the inverted domain for the y-scale: bigger is up!
+var x = d3.time.scale().range([0, w]),
+    y = d3.scale.linear().range([h, 0]),
+    xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(-h, 0).tickPadding(6),
+    yAxis = d3.svg.axis().scale(y).orient("right").tickSize(-w).tickPadding(6);
+
+// An area generator.
+var area = d3.svg.area()
+    .interpolate("step-after")
+    .x(function(d) { return x(d.date); })//调用数据date
+    .y0(y(0))
+    .y1(function(d) { return y(d.value); });//调用数据value
+
+// A line generator.
+var line = d3.svg.line()
+    .interpolate("step-after")
+    .x(function(d) { return x(d.date); })//调用数据date
+    .y(function(d) { return y(d.value); });//调用数据value
+
+var svg = d3.select("body").append("svg:svg")
+    .attr("width", w + m[1] + m[3])
+    .attr("height", h + m[0] + m[2])
+  .append("svg:g")
+    .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+var gradient = svg.append("svg:defs").append("svg:linearGradient")
+    .attr("id", "gradient")
+    .attr("x2", "0%")
+    .attr("y2", "100%");
+
+gradient.append("svg:stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#fff")
+    .attr("stop-opacity", .5);
+
+gradient.append("svg:stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#999")
+    .attr("stop-opacity", 1);
+
+svg.append("svg:clipPath")
+    .attr("id", "clip")
+  .append("svg:rect")
+    .attr("x", x(0))
+    .attr("y", y(1))
+    .attr("width", x(1) - x(0))
+    .attr("height", y(0) - y(1));
+
+svg.append("svg:g")
+    .attr("class", "y axis")
+    .attr("transform", "translate(" + w + ",0)");
+
+svg.append("svg:path")
+    .attr("class", "area")
+    .attr("clip-path", "url(#clip)")
+    .style("fill", "url(#gradient)");
+
+svg.append("svg:g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + h + ")");
+
+svg.append("svg:path")
+    .attr("class", "line")
+    .attr("clip-path", "url(#clip)");
+
+svg.append("svg:rect")
+    .attr("class", "pane")
+    .attr("width", w)
+    .attr("height", h)
+    .call(d3.behavior.zoom().on("zoom", zoom));
+
+d3.csv("../数据文件/flights-departed.csv", function(data) {//数据接口
+
+  // Parse dates and numbers.
+  data.forEach(function(d) {
+    d.date = parse(d.date);//调用数据date
+    d.value = +d.value;//调用数据value
+  });
+
+  // Compute the maximum price.
+  x.domain([new Date(1999, 0, 1), new Date(2003, 0, 0)]);//刚刷新显示的日期范围
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);//调用数据value
+
+  // Bind the data to our path elements.
+  svg.select("path.area").data([data]);
+  svg.select("path.line").data([data]);
+
+  draw();
+});
+
+function draw() {
+  svg.select("g.x.axis").call(xAxis);
+  svg.select("g.y.axis").call(yAxis);
+  svg.select("path.area").attr("d", area);
+  svg.select("path.line").attr("d", line);
+  d3.select("#footer span").text("U.S. Commercial Flights, " + x.domain().map(format).join("-"));//右上角文本
+}
+
+function zoom() {//缩放函数
+  d3.event.transform(x); // TODO d3.behavior.zoom should support extents
+  draw();
+}
+
+    </script>
+  <div>
+      <h2>#js代码</h2>
+    <pre style="border: 2px solid deepskyblue">
+    <code>
+        var m = [79, 80, 160, 79],
+        w = 1280 - m[1] - m[3],
+        h = 800 - m[0] - m[2],
+        parse = d3.time.format("%Y-%m-%d").parse,
+        format = d3.time.format("%Y");
+
+        // Scales. Note the inverted domain for the y-scale: bigger is up!
+        var x = d3.time.scale().range([0, w]),
+        y = d3.scale.linear().range([h, 0]),
+        xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(-h, 0).tickPadding(6),
+        yAxis = d3.svg.axis().scale(y).orient("right").tickSize(-w).tickPadding(6);
+
+        // An area generator.
+        var area = d3.svg.area()
+        .interpolate("step-after")
+        .x(function(d) { return x(d.date); })//调用数据date
+        .y0(y(0))
+        .y1(function(d) { return y(d.value); });//调用数据value
+
+        // A line generator.
+        var line = d3.svg.line()
+        .interpolate("step-after")
+        .x(function(d) { return x(d.date); })//调用数据date
+        .y(function(d) { return y(d.value); });//调用数据value
+
+        var svg = d3.select("body").append("svg:svg")
+        .attr("width", w + m[1] + m[3])
+        .attr("height", h + m[0] + m[2])
+        .append("svg:g")
+        .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+        var gradient = svg.append("svg:defs").append("svg:linearGradient")
+        .attr("id", "gradient")
+        .attr("x2", "0%")
+        .attr("y2", "100%");
+
+        gradient.append("svg:stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "#fff")
+        .attr("stop-opacity", .5);
+
+        gradient.append("svg:stop")
+        .attr("offset", "100%")
+        .attr("stop-color", "#999")
+        .attr("stop-opacity", 1);
+
+        svg.append("svg:clipPath")
+        .attr("id", "clip")
+        .append("svg:rect")
+        .attr("x", x(0))
+        .attr("y", y(1))
+        .attr("width", x(1) - x(0))
+        .attr("height", y(0) - y(1));
+
+        svg.append("svg:g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + w + ",0)");
+
+        svg.append("svg:path")
+        .attr("class", "area")
+        .attr("clip-path", "url(#clip)")
+        .style("fill", "url(#gradient)");
+
+        svg.append("svg:g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + h + ")");
+
+        svg.append("svg:path")
+        .attr("class", "line")
+        .attr("clip-path", "url(#clip)");
+
+        svg.append("svg:rect")
+        .attr("class", "pane")
+        .attr("width", w)
+        .attr("height", h)
+        .call(d3.behavior.zoom().on("zoom", zoom));
+
+        d3.csv("../数据文件/flights-departed.csv", function(data) {//数据接口
+
+        // Parse dates and numbers.
+        data.forEach(function(d) {
+        d.date = parse(d.date);//调用数据date
+        d.value = +d.value;//调用数据value
+        });
+
+        // Compute the maximum price.
+        x.domain([new Date(1999, 0, 1), new Date(2003, 0, 0)]);//刚刷新显示的日期范围
+        y.domain([0, d3.max(data, function(d) { return d.value; })]);//调用数据value
+
+        // Bind the data to our path elements.
+        svg.select("path.area").data([data]);
+        svg.select("path.line").data([data]);
+
+        draw();
+        });
+
+        function draw() {
+        svg.select("g.x.axis").call(xAxis);
+        svg.select("g.y.axis").call(yAxis);
+        svg.select("path.area").attr("d", area);
+        svg.select("path.line").attr("d", line);
+        d3.select("#footer span").text("U.S. Commercial Flights, " + x.domain().map(format).join("-"));//右上角文本
+        }
+
+        function zoom() {//缩放函数
+        d3.event.transform(x); // TODO d3.behavior.zoom should support extents
+        draw();
+        }
+    </code>
+</pre>
+  </div>
+  <div>
+      <h2>#数据文件（部分）</h2>
+    <pre style="border: 2px solid deepskyblue">
+    <code>
+        date,value
+        1988-01-01,12681
+        1988-01-02,13264
+        1988-01-03,13953
+        1988-01-04,13921
+        1988-01-05,13932
+        1988-01-06,13157
+        1988-01-07,11159
+        1988-01-08,11631
+        1988-01-09,12045
+        1988-01-10,13160
+        1988-01-11,14240
+        1988-01-12,14302
+        1988-01-13,14353
+        1988-01-14,14451
+        1988-01-15,14496
+        1988-01-16,13041
+        1988-01-17,13337
+        1988-01-18,12396
+        1988-01-19,13721
+        1988-01-20,13745
+        1988-01-21,14170
+        1988-01-22,14570
+        1988-01-23,13059
+        1988-01-24,13858
+        1988-01-25,13947
+        1988-01-26,14188
+        1988-01-27,14493
+        1988-01-28,14445
+        1988-01-29,14589
+        1988-01-30,13125
+        1988-01-31,13766
+        1988-02-01,14083
+        1988-02-02,14175
+        1988-02-03,13931
+        1988-02-04,13677
+        1988-02-05,14039
+        1988-02-06,12703
+        1988-02-07,13584
+        1988-02-08,14281
+        1988-02-09,14432
+        1988-02-10,13875
+        1988-02-11,13188
+        1988-02-12,13403
+        1988-02-13,12862
+        1988-02-14,13446
+        1988-02-15,14315
+        1988-02-16,14471
+        1988-02-17,14646
+        1988-02-18,14412
+        1988-02-19,14319
+        1988-02-20,12963
+        1988-02-21,13789
+        1988-02-22,14512
+        1988-02-23,14521
+        1988-02-24,14634
+        1988-02-25,14692
+        1988-02-26,14705
+        1988-02-27,13105
+        1988-02-28,13824
+        1988-02-29,14669
+        1988-03-01,14520
+        1988-03-02,14451
+        1988-03-03,14357
+        1988-03-04,14361
+        1988-03-05,13054
+        1988-03-06,13889
+        1988-03-07,14587
+        1988-03-08,14638
+        1988-03-09,14489
+        1988-03-10,14425
+        1988-03-11,14460
+        1988-03-12,13075
+        1988-03-13,13670
+        1988-03-14,14634
+        1988-03-15,14582
+        1988-03-16,14571
+        1988-03-17,14493
+        1988-03-18,14529
+        1988-03-19,13229
+        1988-03-20,13813
+        1988-03-21,14628
+        1988-03-22,14680
+        1988-03-23,14561
+        1988-03-24,14307
+        1988-03-25,14435
+        1988-03-26,13150
+        1988-03-27,13874
+        1988-03-28,14657
+        1988-03-29,14571
+        1988-03-30,14734
+        1988-03-31,14533
+        1988-04-01,14570
+        1988-04-02,12883
+        1988-04-03,13893
+        1988-04-04,14680
+        1988-04-05,14779
+        1988-04-06,14430
+        1988-04-07,14650
+        1988-04-08,14626
+    </code>
+</pre>
+  </div>
+  </body>
+</html>
